@@ -1,8 +1,8 @@
 //
 //  AppDelegate.m
-//  DeadRooms
+//  Cortez
 //
-//  Created by COLIN DWAN on 7/23/11.
+//  Created by COLIN DWAN on 4/12/11.
 //  Copyright __MyCompanyName__ 2011. All rights reserved.
 //
 
@@ -10,12 +10,17 @@
 
 #import "AppDelegate.h"
 #import "GameConfig.h"
-#import "HelloWorldLayer.h"
+#import "MainStage.h"
+#import "GameEngine.h"
 #import "RootViewController.h"
+#import "ConversationOverlay.h"
+
+#import "SmartFoxiPhoneClient.h"
 
 @implementation AppDelegate
 
 @synthesize window;
+@synthesize smartFox;
 
 - (void) removeStartupFlicker
 {
@@ -63,7 +68,7 @@
 	//
 	EAGLView *glView = [EAGLView viewWithFrame:[window bounds]
 								   pixelFormat:kEAGLColorFormatRGB565	// kEAGLColorFormatRGBA8
-								   depthFormat:0						// GL_DEPTH_COMPONENT16_OES
+								   depthFormat:GL_DEPTH_COMPONENT16_OES						// GL_DEPTH_COMPONENT16_OES
 						];
 	
 	// attach the openglView to the director
@@ -108,9 +113,15 @@
 	
 	// Removes the startup flicker
 	[self removeStartupFlicker];
-	
+    
+    [[GameEngine sharedGameEngine] setupPlayer];
+    
+    // Setup network connection
+    smartFox = [[SmartFoxiPhoneClient alloc] initSmartFoxWithDebugMode:YES delegate:self];
+    [smartFox loadConfig:@"config.xml" connectOnSuccess:YES];
+    
 	// Run the intro Scene
-	[[CCDirector sharedDirector] runWithScene: [HelloWorldLayer scene]];
+	[[CCDirector sharedDirector] runWithScene: [MainStage scene]];
 }
 
 
@@ -120,6 +131,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[[CCDirector sharedDirector] resume];
+    //[self login];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -154,6 +166,85 @@
 	[[CCDirector sharedDirector] release];
 	[window release];
 	[super dealloc];
+}
+
+#pragma mark - Network
+
+- (void)onConnection:(SFSEvent *)evt
+{
+    if ([[evt.params objectForKey:@"success"] boolValue]) {
+        NSLog(@"Connected!");
+        [self login:@""];
+    }
+    else {
+        NSLog(@"Error connecting: %@", [evt.params objectForKey:@"error"]);
+    }
+}
+
+- (void)login:(NSString *)loginName
+{
+    [smartFox send:[LoginRequest requestWithUserName:loginName password:@"" zoneName:@"" params:nil]];
+}
+
+- (void)onLogin:(SFSEvent *)evt
+{
+    NSLog(@"onLogin passed");
+    [smartFox send:[JoinRoomRequest requestWithId:@"The Lobby"]];
+    
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onLogin:)]) {
+        [stage onLogin:evt];
+    }
+}
+
+- (void)onRoomJoin:(SFSEvent *)evt
+{
+    NSLog(@"onRoomJoin");
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onRoomJoin:)]) {
+        [stage onRoomJoin:evt];
+    }
+}
+
+- (void)onObjectMessage:(SFSEvent *)evt
+{
+    NSLog(@"onObjectMessage");
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onObjectMessage:)]) {
+        [stage onObjectMessage:evt];
+    }
+}
+
+- (void)onRoomCreationError:(SFSEvent *)evt
+{
+    NSLog(@"onRoomCreationError");
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onRoomCreationError:)]) {
+        [stage onRoomCreationError:evt];
+    }
+}
+
+- (void)onUserEnterRoom:(SFSEvent *)evt
+{
+    NSLog(@"onUserEnterRoom");
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onUserEnterRoom:)]) {
+        [stage onUserEnterRoom:evt];
+    }
+}
+
+- (void)onUserExitRoom:(SFSEvent *)evt
+{
+    NSLog(@"onUserExitRoom");
+    MainStage *stage = (MainStage *)[[[CCDirector sharedDirector] runningScene] getChildByTag:MAIN_STAGE_TAG];
+    if ([stage respondsToSelector:@selector(onUserExitRoom:)]) {
+        [stage onUserExitRoom:evt];
+    }
+}
+
+- (void)onUserCountChange:(SFSEvent *)evt
+{
+    NSLog(@"onUserCountChange");
 }
 
 @end

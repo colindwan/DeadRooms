@@ -1,8 +1,8 @@
 //
 //  RootViewController.h
-//  DeadRooms
+//  Cortez
 //
-//  Created by COLIN DWAN on 7/23/11.
+//  Created by COLIN DWAN on 4/12/11.
 //  Copyright __MyCompanyName__ 2011. All rights reserved.
 //
 

@@ -1,0 +1,12 @@
+<SmartFoxConfig>
+	<ip>174.109.187.15</ip>
+	<port>9933</port>
+	<blueBoxIpAddress>10.0.1.10</blueBoxIpAddress>
+    <blueBoxPort>8080</blueBoxPort>
+	<smartConnect>true</smartConnect>
+	<httpPort>8080</httpPort>
+	<httpPollSpeed>750</httpPollSpeed>
+	<zone>SimpleChat</zone>
+</SmartFoxConfig>
+
+<!-- external ip: 174.109.187.15>
