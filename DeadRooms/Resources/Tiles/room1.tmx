@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
+<map version="1.0" orientation="orthogonal" width="20" height="9" tilewidth="40" tileheight="40">
+ <tileset firstgid="1" source="grass.tsx"/>
+ <tileset firstgid="19" source="wood.tsx"/>
+ <tileset firstgid="28" name="tool_icons" tilewidth="40" tileheight="40">
+  <image source="Tool Tiles/tool_icons.png" width="128" height="64"/>
+ </tileset>
+ <layer name="ground" width="20" height="9">
+  <data encoding="base64" compression="zlib">
+   eJzjYmBg4BrFo3iYYAD0pwcJ
+  </data>
+ </layer>
+ <layer name="obstacles" width="20" height="9">
+  <data encoding="base64" compression="zlib">
+   eJxjYKAvEIViZCACxMIUmIeNFqPQPHS2GBItxkC8+eh+xWYeKQCXelqaR4p/BxoAAC49Aho=
+  </data>
+ </layer>
+ <objectgroup name="triggers" width="20" height="9">
+  <object name="start (new game)" type="start" x="31" y="163" width="108" height="26"/>
+ </objectgroup>
+ <objectgroup name="tools" width="20" height="9"/>
+</map>
